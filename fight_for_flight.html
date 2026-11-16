@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fight for Flight | منظومة التحدي والإنجاز</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo & Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#090d16',
+                        },
+                        emerald: {
+                            450: '#10b981',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #090d16;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(16, 185, 129, 0.4); }
+            50% { border-color: rgba(16, 185, 129, 1); }
+        }
+        .alarm-active {
+            animation: pulse-border 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-16">
+
+    <!-- In-App Notification Toast Banner -->
+    <div id="in-app-alarm" class="fixed top-4 left-4 right-4 md:left-auto md:right-6 md:w-96 z-50 hidden transform transition-all duration-300">
+        <div class="bg-slate-900 border-2 border-emerald-500 rounded-2xl p-4 shadow-2xl alarm-active flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                🔔
+            </div>
+            <div class="flex-1">
+                <h4 id="alarm-title" class="font-bold text-emerald-400 text-sm">تنبيه الموعد!</h4>
+                <p id="alarm-body" class="text-xs text-slate-200 mt-1 leading-relaxed">حان الآن موعد مهمتك المحددة.</p>
+                <button onclick="dismissAlarm()" class="mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-lg transition">
+                    تم، حسناً
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header & Quick Stats -->
+    <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 shadow-lg shadow-slate-950/50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <!-- Sleek Custom Inline SVG Wing & Arrow Logo -->
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-cyan-500/15 to-slate-900 border border-emerald-500/40 flex items-center justify-center shadow-lg shadow-emerald-500/15 shrink-0">
+                    <svg class="w-7 h-7" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="wingGrad" x1="8" y1="54" x2="56" y2="10" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#10b981"/>
+                                <stop offset="55%" stop-color="#06b6d4"/>
+                                <stop offset="100%" stop-color="#38bdf8"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Upper Dynamic Wing Feather -->
+                        <path d="M10 42C22 39 34 29 44 14C34 19 22 23 12 24C18 27 23 28 28 28C21 33 15 37 10 42Z" fill="url(#wingGrad)"/>
+                        <!-- Lower Secondary Wing Feather -->
+                        <path d="M16 50C26 47 36 39 45 27C37 31 28 34 20 35C24 37 28 38 32 38C26 43 21 46 16 50Z" fill="url(#wingGrad)" opacity="0.75"/>
+                        <!-- Ascending Flight Arrow -->
+                        <path d="M35 52L53 13M53 13H39M53 13V27" stroke="#f8fafc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-black text-lg sm:text-xl tracking-wide bg-gradient-to-l from-emerald-400 via-cyan-300 to-white bg-clip-text text-transparent leading-tight" dir="ltr">
+                            Fight for Flight
+                        </h1>
+                        <span class="hidden sm:inline-block text-[10px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-full">
+                            PRO
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">قاتل لتحلّق • دايت ذكي، دروس ومتراكمات، وتايمر تركيز</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Points Badge -->
+                <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5" title="نقاط الالتزام">
+                    <span>🏆</span>
+                    <span id="header-points">0 نقطة</span>
+                </div>
+
+                <!-- Notification Permission Button -->
+                <button id="notif-perm-btn" onclick="requestNotifPermission()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                    <span id="notif-icon">🔕</span>
+                    <span id="notif-text" class="hidden sm:inline">تفعيل الإشعارات</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 pt-5 w-full flex-grow space-y-6">
+
+        <!-- Top Grid: Diet Calculator + Pomodoro Timer + Water/Steps -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+            <!-- 1. Smart Diet & Calorie Calculator (5 Cols) -->
+            <section class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-bold text-base text-emerald-400 flex items-center gap-2">
+                            <span>🥗</span> حاسبة السعرات والوجبات الذكية
+                        </h2>
+                        <span id="bmi-badge" class="text-[11px] font-bold bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700">
+                            BMI: 32.4
+                        </span>
+                    </div>
+
+                    <!-- User Inputs Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2.5 mb-3">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">الوزن (كجم)</label>
+                            <input type="number" id="calc-weight" value="105" min="35" max="250" oninput="recalculateDiet()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-sm font-bold text-white focus:border-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">الطول (سم)</label>
+                            <input type="number" id="calc-height" value="180" min="120" max="230" oninput="recalculateDiet()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-sm font-bold text-white focus:border-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">العمر (سنة)</label>
+                            <input type="number" id="calc-age" value="18" min="12" max="80" oninput="recalculateDiet()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-sm font-bold text-white focus:border-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">الهدف</label>
+                            <select id="calc-goal" onchange="recalculateDiet()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:border-emerald-500 focus:outline-none">
+                                <option value="rapid" selected>تخسيس سريع وآمن</option>
+                                <option value="moderate">تخسيس متوسط</option>
+                                <option value="maintain">ثبات الوزن</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Calculated Results Banner -->
+                    <div class="grid grid-cols-3 gap-2 bg-slate-950/80 border border-slate-800 rounded-xl p-3 mb-3 text-center">
+                        <div>
+                            <div class="text-[10px] text-slate-400">سعراتك اليومية</div>
+                            <div id="res-calories" class="text-base font-black text-emerald-400">1,400</div>
+                            <div class="text-[10px] text-slate-500">سعرة / يوم</div>
+                        </div>
+                        <div class="border-x border-slate-800">
+                            <div class="text-[10px] text-slate-400">البروتين المطلوب</div>
+                            <div id="res-protein" class="text-base font-black text-amber-400">135 جم</div>
+                            <div class="text-[10px] text-slate-500">لحماية العضلات</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-slate-400">معدل الحرق TDEE</div>
+                            <div id="res-tdee" class="text-base font-black text-blue-400">2,450</div>
+                            <div class="text-[10px] text-slate-500">سعرة أساسية</div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Recommended Meals Preview -->
+                    <div class="bg-slate-850 border border-slate-800 rounded-xl p-3 space-y-1.5 text-xs">
+                        <div class="font-bold text-slate-300 mb-1 flex items-center justify-between">
+                            <span>🍽️ الوجبات الاقتصادية المقترحة لك:</span>
+                            <span id="meal-tier-label" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">خطة 1400 سعرة</span>
+                        </div>
+                        <p class="text-slate-300"><strong class="text-amber-400">الفطار:</strong> <span id="meal-breakfast-text"></span></p>
+                        <p class="text-slate-300"><strong class="text-emerald-400">الغداء:</strong> <span id="meal-lunch-text"></span></p>
+                        <p class="text-slate-300"><strong class="text-indigo-400">العشاء:</strong> <span id="meal-dinner-text"></span></p>
+                        <p class="text-slate-300"><strong class="text-pink-400">سناكس:</strong> <span id="meal-snack-text"></span></p>
+                    </div>
+                </div>
+
+                <button onclick="syncMealsToAllDays()" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 rounded-xl transition shadow-md shadow-emerald-950 flex items-center justify-center gap-2">
+                    <span>🔄</span> تحديث الوجبات في جدول المهام اليومية
+                </button>
+            </section>
+
+            <!-- 2. Pomodoro & Workout Timer (4 Cols) -->
+            <section class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-bold text-base text-amber-400 flex items-center gap-2">
+                            <span>⏱️</span> تايمر المذاكرة والتمارين
+                        </h2>
+                        <span id="timer-mode-badge" class="text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                            بومودورو 25 د
+                        </span>
+                    </div>
+
+                    <!-- Circular / Visual Progress Display -->
+                    <div class="my-4 flex flex-col items-center justify-center bg-slate-950 border border-slate-800 rounded-2xl p-5 relative overflow-hidden">
+                        <div id="timer-clock" class="text-5xl font-black tracking-wider text-white font-mono z-10">
+                            25:00
+                        </div>
+                        <p id="timer-status-text" class="text-xs text-slate-400 mt-1 z-10">جاهز لبدء جلسة تركيز</p>
+                        
+                        <!-- Progress Bar at bottom of clock box -->
+                        <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
+                            <div id="timer-progress-bar" class="bg-amber-500 h-full w-full transition-all duration-500"></div>
+                        </div>
+                    </div>
+
+                    <!-- Presets -->
+                    <div class="grid grid-cols-2 gap-2 mb-2.5">
+                        <button onclick="setTimerPreset(25, 'بومودورو 25 د')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold py-2 rounded-xl transition">
+                            📚 25 د (بومودورو)
+                        </button>
+                        <button onclick="setTimerPreset(50, 'مذاكرة مكثفة 50 د')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold py-2 rounded-xl transition">
+                            🔥 50 د (مكثفة)
+                        </button>
+                        <button onclick="setTimerPreset(10, 'استراحة 10 د')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold py-2 rounded-xl transition">
+                            ☕ 10 د (استراحة)
+                        </button>
+                        <button onclick="setTimerPreset(15, 'مشي / تمرين 15 د')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold py-2 rounded-xl transition">
+                            🏃 15 د (مشي/رياضة)
+                        </button>
+                    </div>
+
+                    <!-- Custom Minutes Input -->
+                    <div class="flex gap-2 mb-3">
+                        <input type="number" id="custom-timer-mins" min="1" max="180" placeholder="دقائق مخصصة (مثلاً 40)" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none">
+                        <button onclick="applyCustomTimer()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-xl transition">
+                            ضبط
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="btn-timer-start" onclick="startTimer()" class="col-span-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs py-2.5 rounded-xl transition shadow-md">
+                        ▶ بدء التايمر
+                    </button>
+                    <button onclick="resetTimer()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs py-2.5 rounded-xl border border-slate-700 transition">
+                        ↺ إعادة
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3. Water, Steps & Smart Reminders (3 Cols) -->
+            <section class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-4">
+                
+                <!-- Water Tracker -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-xs font-bold text-blue-400 flex items-center gap-1">💧 شرب الماء</span>
+                        <span id="water-label" class="text-xs font-extrabold text-white">0 / 16 كوب</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mb-2.5">
+                        <div id="water-bar" class="bg-blue-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="addWater(1)" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-1.5 rounded-lg transition">
+                            +1 كوب (250مل)
+                        </button>
+                        <button onclick="addWater(-1)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+                            -
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Steps Tracker -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-xs font-bold text-emerald-400 flex items-center gap-1">👟 خطوات المشي</span>
+                        <span id="steps-label" class="text-xs font-extrabold text-white">0 / 10,000</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mb-2.5">
+                        <div id="steps-bar" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="addSteps(1000)" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-1.5 rounded-lg transition">
+                            +1,000 خطوة
+                        </button>
+                        <button onclick="addSteps(-1000)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+                            -
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Smart Quick Reminders Toggles -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
+                    <div class="text-xs font-bold text-slate-300">🔔 التذكيرات التلقائية الذكية</div>
+                    
+                    <label class="flex items-center justify-between cursor-pointer text-xs text-slate-400">
+                        <span>تذكير شرب ماء (كل ساعة)</span>
+                        <input type="checkbox" id="toggle-water-reminder" onchange="toggleSmartReminders()" class="w-4 h-4 accent-blue-500 rounded cursor-pointer">
+                    </label>
+
+                    <label class="flex items-center justify-between cursor-pointer text-xs text-slate-400">
+                        <span>تذكير المذاكرة (كل ساعتين)</span>
+                        <input type="checkbox" id="toggle-study-reminder" onchange="toggleSmartReminders()" class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
+                    </label>
+
+                    <button onclick="testNotification()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold py-1.5 rounded-lg border border-slate-700 transition">
+                        🔊 تجربة صوت وإشعار التنبيه
+                    </button>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- Bottom Section: Interactive Weekly To-Do List & Custom Lesson/Backlog Manager -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
+            
+            <!-- Header & Progress -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
+                        <span>📋</span> جدول المهام والدروس والمتراكمات الأسبوعي
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">اختر اليوم لمتابعة دروسك، مذاكرتك، وجباتك، ورياضتك مع إمكانية إضافة دروس وتذكيرات</p>
+                </div>
+
+                <!-- Day Progress Bar -->
+                <div class="w-full md:w-64 bg-slate-950 border border-slate-800 p-3 rounded-xl">
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-slate-400">إنجاز <span id="current-day-name" class="text-emerald-400">السبت</span>:</span>
+                        <span id="day-progress-pct" class="text-emerald-400">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                        <div id="day-progress-bar" class="bg-gradient-to-l from-emerald-400 to-teal-600 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day Selector Tabs -->
+            <div class="flex gap-2 overflow-x-auto py-4">
+                <button onclick="selectDay('sat')" id="btn-day-sat" class="day-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-emerald-600 text-white shadow-md">السبت</button>
+                <button onclick="selectDay('sun')" id="btn-day-sun" class="day-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-slate-800 text-slate-300 hover:bg-slate-700">الأحد</button>
+                <button onclick="selectDay('mon')" id="btn-day-mon" class="day-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-slate-800 text-slate-300 hover:bg-slate-700">الإثنين</button>
+                <button onclick="selectDay('tue')" id="btn-day-tue" class="day-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-slate-800 text-slate-300 hover:bg-slate-700">الثلاثاء</button>
+                <button onclick="selectDay('wed')" id="btn-day-wed" class="day-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-slate-800 text-slate-300 hover:bg-slate-700">الأربعاء</button>
+                <button onclick="selectDay('thu')" id="btn-day-thu" class="day-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-slate-800 text-slate-300 hover:bg-slate-700">الخميس</button>
+                <button onclick="selectDay('fri')" id="btn-day-fri" class="day-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-slate-800 text-slate-300 hover:bg-slate-700">الجمعة</button>
+            </div>
+
+            <!-- Add Custom Lesson / Backlog / Task Form -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 mb-5">
+                <div class="text-xs font-bold text-emerald-400 mb-2.5 flex items-center gap-1.5">
+                    <span>➕</span> إضافة درس جديد، درس متراكم، أو مهمة مخصصة
+                </div>
+                <form onsubmit="handleAddTask(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                    <!-- Lesson / Task Name -->
+                    <div class="sm:col-span-5">
+                        <input type="text" id="task-title-input" required placeholder="اسم الدرس أو المتراكم (مثال: الباب الأول فيزياء)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none">
+                    </div>
+
+                    <!-- Category -->
+                    <div class="sm:col-span-2">
+                        <select id="task-cat-input" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-200 focus:border-emerald-500 focus:outline-none">
+                            <option value="دروس أساسية">🎓 دروس أساسية</option>
+                            <option value="متراكمات" selected>⚠️ متراكمات</option>
+                            <option value="مذاكرة">📚 مذاكرة</option>
+                            <option value="تغذية">🥗 تغذية</option>
+                            <option value="رياضة">🏃 رياضة</option>
+                            <option value="عادات">✨ عادات</option>
+                        </select>
+                    </div>
+
+                    <!-- Target Day -->
+                    <div class="sm:col-span-2">
+                        <select id="task-day-input" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-200 focus:border-emerald-500 focus:outline-none">
+                            <option value="current">نفس اليوم المفتوح</option>
+                            <option value="sat">السبت</option>
+                            <option value="sun">الأحد</option>
+                            <option value="mon">الإثنين</option>
+                            <option value="tue">الثلاثاء</option>
+                            <option value="wed">الأربعاء</option>
+                            <option value="thu">الخميس</option>
+                            <option value="fri">الجمعة</option>
+                        </select>
+                    </div>
+
+                    <!-- Optional Reminder Time HH:MM -->
+                    <div class="sm:col-span-2 flex items-center gap-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5" title="وقت التذكير (اختياري)">
+                        <span class="text-xs text-slate-400">⏰</span>
+                        <input type="time" id="task-time-input" class="w-full bg-transparent text-xs text-white focus:outline-none">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="sm:col-span-1">
+                        <button type="submit" class="w-full h-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 rounded-xl transition shadow">
+                            إضافة
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Filter Pills & Reset Day Button -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <div class="flex flex-wrap gap-1.5 text-[11px] font-bold">
+                    <button onclick="setFilter('all')" id="filter-all" class="filter-pill px-3 py-1 rounded-lg bg-slate-700 text-white">الكل</button>
+                    <button onclick="setFilter('دروس أساسية')" id="filter-دروس أساسية" class="filter-pill px-3 py-1 rounded-lg bg-slate-850 text-slate-400 hover:text-white">🎓 الدروس</button>
+                    <button onclick="setFilter('متراكمات')" id="filter-متراكمات" class="filter-pill px-3 py-1 rounded-lg bg-slate-850 text-slate-400 hover:text-white">⚠️ المتراكمات</button>
+                    <button onclick="setFilter('مذاكرة')" id="filter-مذاكرة" class="filter-pill px-3 py-1 rounded-lg bg-slate-850 text-slate-400 hover:text-white">📚 المذاكرة</button>
+                    <button onclick="setFilter('تغذية')" id="filter-تغذية" class="filter-pill px-3 py-1 rounded-lg bg-slate-850 text-slate-400 hover:text-white">🥗 الوجبات</button>
+                    <button onclick="setFilter('رياضة')" id="filter-رياضة" class="filter-pill px-3 py-1 rounded-lg bg-slate-850 text-slate-400 hover:text-white">🏃 الرياضة</button>
+                    <button onclick="setFilter('عادات')" id="filter-عادات" class="filter-pill px-3 py-1 rounded-lg bg-slate-850 text-slate-400 hover:text-white">✨ العادات</button>
+                </div>
+
+                <button onclick="resetCurrentDayChecks()" class="text-[11px] text-slate-400 hover:text-rose-400 underline transition">
+                    إلغاء تحديد مهام اليوم
+                </button>
+            </div>
+
+            <!-- Tasks List Container -->
+            <div id="tasks-container" class="space-y-2.5">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Application Logic -->
+    <script>
+        // --- 1. Constants & Initial Data ---
+        const DAY_NAMES = {
+            sat: 'السبت',
+            sun: 'الأحد',
+            mon: 'الإثنين',
+            tue: 'الثلاثاء',
+            wed: 'الأربعاء',
+            thu: 'الخميس',
+            fri: 'الجمعة'
+        };
+
+        const CATEGORY_STYLES = {
+            'دروس أساسية': 'bg-purple-500/15 text-purple-300 border-purple-500/30',
+            'متراكمات': 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+            'مذاكرة': 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+            'تغذية': 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+            'رياضة': 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+            'عادات': 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+        };
+
+        // Default weekly tasks tailored to the user's exact schedule
+        const DEFAULT_WEEKLY_TASKS = {
+            sat: [
+                { id: 'sat-1', title: 'الإفطار: 2 بيضة مسلوقة + ربع رغيف بلدي + خيار وجرجير', category: 'تغذية', time: '08:30', done: false, isMeal: 'breakfast' },
+                { id: 'sat-2', title: 'مذاكرة ومتراكم إنجليزي (قواعد وكلمات + حل قطع)', category: 'مذاكرة', time: '10:00', done: false },
+                { id: 'sat-3', title: 'مذاكرة ومتراكم أحياء (Biology - مراجعة وحل أسئلة)', category: 'متراكمات', time: '12:30', done: false },
+                { id: 'sat-4', title: 'الغداء: علبة تونة مصفاة + 3 ملاعق أرز + طبق سلطة كبير', category: 'تغذية', time: '15:00', done: false, isMeal: 'lunch' },
+                { id: 'sat-5', title: 'مشي حر سريع حارق للدهون (60 دقيقة)', category: 'رياضة', time: '17:00', done: false },
+                { id: 'sat-6', title: 'سناك: ثمرة فاكهة (تفاح أو جوافة) + خضار مفتوح', category: 'تغذية', time: '19:00', done: false, isMeal: 'snack' },
+                { id: 'sat-7', title: 'العشاء: خرطة جبن قريش (150 جم) + خيار بدون خبز', category: 'تغذية', time: '21:00', done: false, isMeal: 'dinner' },
+                { id: 'sat-8', title: 'شرب 4 لتر ماء (16 كوب) والنوم مبكراً', category: 'عادات', time: '22:30', done: false }
+            ],
+            sun: [
+                { id: 'sun-1', title: 'الإفطار: 4 ملاعق فول بالليمون + ربع رغيف + خضار', category: 'تغذية', time: '09:30', done: false, isMeal: 'breakfast' },
+                { id: 'sun-2', title: 'درس English الأساسي (من 12:00 إلى 2:00)', category: 'دروس أساسية', time: '12:00', done: false },
+                { id: 'sun-3', title: 'مشي 20 دقيقة أثناء العودة من الدرس', category: 'رياضة', time: '14:15', done: false },
+                { id: 'sun-4', title: 'الغداء: 3 بيضات مسلوقة أو عدس + 3 ملاعق أرز + سلطة', category: 'تغذية', time: '15:00', done: false, isMeal: 'lunch' },
+                { id: 'sun-5', title: 'مذاكرة ومتراكم كيمياء (مراجعة الدرس وحل تدريبات)', category: 'مذاكرة', time: '17:00', done: false },
+                { id: 'sun-6', title: 'مذاكرة ومتراكم فيزياء (قوانين ومسائل)', category: 'متراكمات', time: '19:30', done: false },
+                { id: 'sun-7', title: 'العشاء: علبة زبادي بلدي + خيار (بدون خبز)', category: 'تغذية', time: '21:30', done: false, isMeal: 'dinner' }
+            ],
+            mon: [
+                { id: 'mon-1', title: 'الإفطار: 2 بيضة مسلوقة + ربع رغيف بلدي + خيار', category: 'تغذية', time: '08:30', done: false, isMeal: 'breakfast' },
+                { id: 'mon-2', title: 'درس French الأساسي (من 10:00 إلى 12:00)', category: 'دروس أساسية', time: '10:00', done: false },
+                { id: 'mon-3', title: 'سناك خفيف بين الدرسين: ثمرة فاكهة + خيار', category: 'تغذية', time: '12:30', done: false, isMeal: 'snack' },
+                { id: 'mon-4', title: 'درس عربي الأساسي (من 2:30 إلى 4:30)', category: 'دروس أساسية', time: '14:30', done: false },
+                { id: 'mon-5', title: 'الغداء: بروتين اقتصادي + 3 ملاعق أرز + سلطة', category: 'تغذية', time: '17:00', done: false, isMeal: 'lunch' },
+                { id: 'mon-6', title: 'مشي مسائي 30 دقيقة + تمارين منزلية (سكوات وضغط حائط)', category: 'رياضة', time: '18:30', done: false },
+                { id: 'mon-7', title: 'مذاكرة فيزياء وعربي (تثبيت دروس اليوم)', category: 'مذاكرة', time: '20:00', done: false },
+                { id: 'mon-8', title: 'العشاء: جبن قريش + خيار وجرجير', category: 'تغذية', time: '22:00', done: false, isMeal: 'dinner' }
+            ],
+            tue: [
+                { id: 'tue-1', title: 'الإفطار: 2 بيضة مسلوقة + ربع رغيف + خضار', category: 'تغذية', time: '10:00', done: false, isMeal: 'breakfast' },
+                { id: 'tue-2', title: 'درس Physics الأساسي (من 2:00 إلى 5:00)', category: 'دروس أساسية', time: '14:00', done: false },
+                { id: 'tue-3', title: 'الغداء: سمكة مشوية أو تونة + 3 ملاعق أرز + سلطة', category: 'تغذية', time: '17:30', done: false, isMeal: 'lunch' },
+                { id: 'tue-4', title: 'متابعة دروس الأونلاين (Chemistry - Biology - Arabic)', category: 'دروس أساسية', time: '19:00', done: false },
+                { id: 'tue-5', title: 'مذاكرة أحياء وكيمياء + تمارين منزلية سريعة', category: 'مذاكرة', time: '21:00', done: false },
+                { id: 'tue-6', title: 'العشاء: زبادي بلدي بالليمون + خيار', category: 'تغذية', time: '22:30', done: false, isMeal: 'dinner' }
+            ],
+            wed: [
+                { id: 'wed-1', title: 'الإفطار: 4 ملاعق فول + ربع رغيف بلدي + خضار', category: 'تغذية', time: '09:30', done: false, isMeal: 'breakfast' },
+                { id: 'wed-2', title: 'مذاكرة عربي (نحو وبلاغة وحل نصوص)', category: 'مذاكرة', time: '11:30', done: false },
+                { id: 'wed-3', title: 'الغداء قبل الدرس: عدس أو كبدة دجاج + 3 ملاعق أرز + سلطة', category: 'تغذية', time: '14:00', done: false, isMeal: 'lunch' },
+                { id: 'wed-4', title: 'درس Chemistry الأساسي (من 3:30 إلى 5:30)', category: 'دروس أساسية', time: '15:30', done: false },
+                { id: 'wed-5', title: 'مشي 20 دقيقة + تمارين سكوات وضغط حائط', category: 'رياضة', time: '18:00', done: false },
+                { id: 'wed-6', title: 'العشاء: جبن قريش + خيار وفلفل ألوان', category: 'تغذية', time: '21:00', done: false, isMeal: 'dinner' }
+            ],
+            thu: [
+                { id: 'thu-1', title: 'الإفطار: 2 بيضة مسلوقة + ربع رغيف بلدي + خضار', category: 'تغذية', time: '09:00', done: false, isMeal: 'breakfast' },
+                { id: 'thu-2', title: 'مذاكرة أحياء (Biology - إنهاء المتراكم وحل شامل)', category: 'مذاكرة', time: '11:00', done: false },
+                { id: 'thu-3', title: 'الغداء: بروتين اقتصادي + 3 ملاعق أرز + سلطة', category: 'تغذية', time: '14:30', done: false, isMeal: 'lunch' },
+                { id: 'thu-4', title: 'مشي حر سريع (45 دقيقة)', category: 'رياضة', time: '16:30', done: false },
+                { id: 'thu-5', title: 'مراجعة شاملة لأي درس متراكم (فيزياء أو كيمياء)', category: 'متراكمات', time: '18:30', done: false },
+                { id: 'thu-6', title: 'العشاء: زبادي بلدي أو جبن قريش + خيار', category: 'تغذية', time: '21:00', done: false, isMeal: 'dinner' }
+            ],
+            fri: [
+                { id: 'fri-1', title: 'الإفطار: 2 بيضة مسلوقة + ربع رغيف بلدي + خضار', category: 'تغذية', time: '09:30', done: false, isMeal: 'breakfast' },
+                { id: 'fri-2', title: 'مذاكرة ومراجعة إنجليزي (حل امتحان كامل وكلمات)', category: 'مذاكرة', time: '11:30', done: false },
+                { id: 'fri-3', title: 'الغداء المبكر: سمك أو تونة + 3 ملاعق أرز + سلطة', category: 'تغذية', time: '14:30', done: false, isMeal: 'lunch' },
+                { id: 'fri-4', title: 'درس Biology سنتر (من 5:00 إلى 8:00 مساءً)', category: 'دروس أساسية', time: '17:00', done: false },
+                { id: 'fri-5', title: 'مشي 25 دقيقة بعد الدرس + تمارين منزلية خفيفة', category: 'رياضة', time: '20:30', done: false },
+                { id: 'fri-6', title: 'العشاء: خرطة جبن قريش + خيار', category: 'تغذية', time: '21:30', done: false, isMeal: 'dinner' }
+            ]
+        };
+
+        // --- 2. State Management & Persistence ---
+        const STORAGE_KEY = 'fight_for_flight_app_v3';
+
+        let appState = {
+            currentDay: getTodayKey(),
+            currentFilter: 'all',
+            points: 0,
+            waterCups: 0,
+            steps: 0,
+            profile: {
+                weight: 105,
+                height: 180,
+                age: 18,
+                goal: 'rapid'
+            },
+            reminders: {
+                waterHourly: false,
+                studyBiHourly: false,
+                firedToday: {} // tracks "day-taskId-HH:MM" so alarm doesn't repeat within same minute
+            },
+            tasks: JSON.parse(JSON.stringify(DEFAULT_WEEKLY_TASKS))
+        };
+
+        function getTodayKey() {
+            const map = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+            return map[new Date().getDay()] || 'sat';
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    appState = {
+                        ...appState,
+                        ...parsed,
+                        profile: { ...appState.profile, ...(parsed.profile || {}) },
+                        reminders: { ...appState.reminders, ...(parsed.reminders || {}) },
+                        tasks: parsed.tasks || appState.tasks
+                    };
+                }
+            } catch (e) {
+                console.error('Failed to load state:', e);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error('Failed to save state:', e);
+            }
+        }
+
+        // --- 3. Smart Diet & Calorie Calculator ---
+        let currentMealPlan = {
+            breakfast: '',
+            lunch: '',
+            dinner: '',
+            snack: ''
+        };
+
+        function recalculateDiet() {
+            const w = parseFloat(document.getElementById('calc-weight').value) || 105;
+            const h = parseFloat(document.getElementById('calc-height').value) || 180;
+            const a = parseFloat(document.getElementById('calc-age').value) || 18;
+            const goal = document.getElementById('calc-goal').value;
+
+            appState.profile = { weight: w, height: h, age: a, goal };
+
+            // BMI calculation
+            const heightM = h / 100;
+            const bmi = (w / (heightM * heightM)).toFixed(1);
+            document.getElementById('bmi-badge').innerText = `BMI: ${bmi}`;
+
+            // Mifflin-St Jeor BMR (Male student default) + Light/Moderate student walking activity (1.375)
+            const bmr = (10 * w) + (6.25 * h) - (5 * a) + 5;
+            const tdee = Math.round(bmr * 1.375);
+
+            let targetCalories = tdee;
+            if (goal === 'rapid') {
+                targetCalories = Math.max(1350, Math.round(tdee - 1100));
+            } else if (goal === 'moderate') {
+                targetCalories = Math.max(1550, Math.round(tdee - 600));
+            }
+
+            // Protein target (~1.3g to 1.5g per kg of ideal/current weight)
+            const targetProtein = Math.round(Math.min(w * 1.3, 175));
+
+            document.getElementById('res-calories').innerText = targetCalories.toLocaleString();
+            document.getElementById('res-protein').innerText = `${targetProtein} جم`;
+            document.getElementById('res-tdee').innerText = tdee.toLocaleString();
+            document.getElementById('meal-tier-label').innerText = `خطة ~${targetCalories} سعرة`;
+
+            // Tailor affordable Egyptian meals to calorie tier
+            if (targetCalories <= 1500) {
+                currentMealPlan = {
+                    breakfast: '2 بيضة مسلوقة (أو 4 ملاعق فول) + ربع رغيف بلدي + خيار وجرجير',
+                    lunch: 'تونة مصفاة / عدس / كبدة دجاج / سمك مشوي + 3 ملاعق أرز + طبق سلطة كبير',
+                    dinner: 'خرطة جبن قريش (150 جم) أو علبة زبادي بلدي + خيار (بدون خبز)',
+                    snack: 'ثمرة فاكهة واحدة (تفاح / جوافة / برتقال) + خضار طازج مفتوح'
+                };
+            } else if (targetCalories <= 2000) {
+                currentMealPlan = {
+                    breakfast: '3 بيضات مسلوقة + نصف رغيف بلدي + قطعة جبن قريش + خضار',
+                    lunch: 'صدر دجاج / سمكة كبيرة / تونة + 6 ملاعق أرز + سلطة وخضار سوتيه',
+                    dinner: '200 جم جبن قريش + 2 بيضة مسلوقة + خيار وطماطم',
+                    snack: 'ثمرتين فاكهة + حفنة سوداني غير مملح (20 جم)'
+                };
+            } else {
+                currentMealPlan = {
+                    breakfast: '3 بيضات أومليت خفيف + رغيف بلدي كامل + طبق فول صغير + سلطة',
+                    lunch: 'ربع فرخة أو سمكتين + 8 ملاعق أرز + طبق خضار مطبوخ وسلطة',
+                    dinner: 'علبة تونة أو 200 جم جبن قريش + نصف رغيف بلدي + زبادي',
+                    snack: 'ثمرتين فاكهة + كوب لبن أو حفنة مكسرات/سوداني'
+                };
+            }
+
+            document.getElementById('meal-breakfast-text').innerText = currentMealPlan.breakfast;
+            document.getElementById('meal-lunch-text').innerText = currentMealPlan.lunch;
+            document.getElementById('meal-dinner-text').innerText = currentMealPlan.dinner;
+            document.getElementById('meal-snack-text').innerText = currentMealPlan.snack;
+
+            saveState();
+        }
+
+        function syncMealsToAllDays() {
+            Object.keys(appState.tasks).forEach(dayKey => {
+                appState.tasks[dayKey].forEach(task => {
+                    if (task.isMeal === 'breakfast') task.title = `الإفطار: ${currentMealPlan.breakfast}`;
+                    if (task.isMeal === 'lunch') task.title = `الغداء: ${currentMealPlan.lunch}`;
+                    if (task.isMeal === 'dinner') task.title = `العشاء: ${currentMealPlan.dinner}`;
+                    if (task.isMeal === 'snack') task.title = `سناك: ${currentMealPlan.snack}`;
+                });
+            });
+            saveState();
+            renderTasks();
+            triggerInAppAlarm('تم تحديث الوجبات بنجاح! 🥗', 'تمت مزامنة الوجبات الاقتصادية المناسبة لسعراتك في جميع أيام الأسبوع.');
+        }
+
+        // --- 4. Web Audio API Chime & Browser Notifications ---
+        function playChimeSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioCtx();
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 pleasant chord
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.6);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + idx * 0.12);
+                    osc.stop(ctx.currentTime + idx * 0.12 + 0.65);
+                });
+            } catch (e) {
+                console.warn('AudioContext playback blocked:', e);
+            }
+        }
+
+        function requestNotifPermission() {
+            if (!('Notification' in window)) {
+                triggerInAppAlarm('تنبيه المتصفح', 'متصفحك لا يدعم إشعارات النظام، ولكن التنبيهات الصوتية والمرئية داخل التطبيق تعمل بكفاءة!');
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                updateNotifUI();
+                if (permission === 'granted') {
+                    triggerNotification('تم تفعيل الإشعارات بنجاح! 🔔', 'سيتم تذكيرك بمواعيد الدروس والمذاكرة وشرب الماء.');
+                }
+            });
+        }
+
+        function updateNotifUI() {
+            const btn = document.getElementById('notif-perm-btn');
+            const icon = document.getElementById('notif-icon');
+            const text = document.getElementById('notif-text');
+            if ('Notification' in window && Notification.permission === 'granted') {
+                icon.innerText = '🔔';
+                text.innerText = 'الإشعارات مفعلة';
+                btn.classList.remove('bg-slate-800', 'text-slate-200');
+                btn.classList.add('bg-emerald-500/15', 'border-emerald-500/40', 'text-emerald-400');
+            }
+        }
+
+        function triggerInAppAlarm(title, body) {
+            playChimeSound();
+            const banner = document.getElementById('in-app-alarm');
+            document.getElementById('alarm-title').innerText = title;
+            document.getElementById('alarm-body').innerText = body;
+            banner.classList.remove('hidden');
+        }
+
+        function dismissAlarm() {
+            document.getElementById('in-app-alarm').classList.add('hidden');
+        }
+
+        function triggerNotification(title, body) {
+            triggerInAppAlarm(title, body);
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification(title, { body, dir: 'rtl', lang: 'ar' });
+                } catch (e) {
+                    console.warn('Notification error:', e);
+                }
+            }
+        }
+
+        function testNotification() {
+            triggerNotification('تجربة التنبيه الذكي 🔔', 'ممتاز! نظام الصوت والإشعارات يعمل بنجاح لتذكيرك بدروسك ووجباتك.');
+        }
+
+        function toggleSmartReminders() {
+            appState.reminders.waterHourly = document.getElementById('toggle-water-reminder').checked;
+            appState.reminders.studyBiHourly = document.getElementById('toggle-study-reminder').checked;
+            saveState();
+        }
+
+        // Background Interval Checker (Runs every 15 seconds)
+        setInterval(() => {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const currentHHMM = `${hh}:${mm}`;
+            const todayKey = getTodayKey();
+            const dateStamp = now.toDateString();
+
+            // 1. Check scheduled tasks for today
+            const todayTasks = appState.tasks[todayKey] || [];
+            todayTasks.forEach(task => {
+                if (!task.done && task.time === currentHHMM) {
+                    const fireKey = `${dateStamp}-${task.id}-${currentHHMM}`;
+                    if (!appState.reminders.firedToday[fireKey]) {
+                        appState.reminders.firedToday[fireKey] = true;
+                        saveState();
+                        triggerNotification(`⏰ حان موعد: ${task.category}`, task.title);
+                    }
+                }
+            });
+
+            // 2. Hourly Water Reminder (at minute 00)
+            if (appState.reminders.waterHourly && mm === '00') {
+                const waterKey = `${dateStamp}-water-${hh}`;
+                if (!appState.reminders.firedToday[waterKey]) {
+                    appState.reminders.firedToday[waterKey] = true;
+                    saveState();
+                    triggerNotification('💧 تذكير شرب الماء!', 'اشرب كوب ماء كبير الآن لتنشيط الحرق والتركيز الذهني.');
+                }
+            }
+
+            // 3. Bi-Hourly Study Reminder (even hours at minute 30)
+            if (appState.reminders.studyBiHourly && now.getHours() % 2 === 0 && mm === '30') {
+                const studyKey = `${dateStamp}-study-${hh}`;
+                if (!appState.reminders.firedToday[studyKey]) {
+                    appState.reminders.firedToday[studyKey] = true;
+                    saveState();
+                    triggerNotification('📚 وقت جلسة تركيز (Pomodoro)!', 'افتح تايمر المذاكرة 25 أو 50 دقيقة وابدأ إنجاز مهامك.');
+                }
+            }
+        }, 15000);
+
+        // --- 5. Pomodoro & Workout Timer ---
+        let timerTotalSeconds = 25 * 60;
+        let timerRemainingSeconds = 25 * 60;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        function setTimerPreset(minutes, label) {
+            pauseTimer();
+            timerTotalSeconds = minutes * 60;
+            timerRemainingSeconds = timerTotalSeconds;
+            document.getElementById('timer-mode-badge').innerText = label;
+            document.getElementById('timer-status-text').innerText = 'جاهز للبدء';
+            updateTimerDisplay();
+        }
+
+        function applyCustomTimer() {
+            const input = document.getElementById('custom-timer-mins');
+            const mins = parseInt(input.value, 10);
+            if (!mins || mins < 1 || mins > 180) return;
+            setTimerPreset(mins, `مؤقت مخصص ${mins} د`);
+            input.value = '';
+        }
+
+        function startTimer() {
+            if (isTimerRunning) {
+                pauseTimer();
+                return;
+            }
+            isTimerRunning = true;
+            const btn = document.getElementById('btn-timer-start');
+            btn.innerHTML = '⏸ إيقاف مؤقت';
+            btn.classList.remove('bg-amber-500', 'hover:bg-amber-400', 'text-slate-950');
+            btn.classList.add('bg-rose-600', 'hover:bg-rose-500', 'text-white');
+            document.getElementById('timer-status-text').innerText = 'الجلسة قيد التشغيل... ركّز!';
+
+            timerInterval = setInterval(() => {
+                if (timerRemainingSeconds > 0) {
+                    timerRemainingSeconds--;
+                    updateTimerDisplay();
+                } else {
+                    pauseTimer();
+                    appState.points += 15;
+                    saveState();
+                    updateHeaderPoints();
+                    document.getElementById('timer-status-text').innerText = 'انتهت الجلسة بنجاح! (+15 نقطة)';
+                    triggerNotification('🎉 انتهى وقت التايمر!', 'عاش يا بطل! أتممت الجلسة بنجاح وحصلت على 15 نقطة.');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            const btn = document.getElementById('btn-timer-start');
+            btn.innerHTML = '▶ استكمال';
+            btn.classList.remove('bg-rose-600', 'hover:bg-rose-500', 'text-white');
+            btn.classList.add('bg-amber-500', 'hover:bg-amber-400', 'text-slate-950');
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerRemainingSeconds = timerTotalSeconds;
+            document.getElementById('btn-timer-start').innerHTML = '▶ بدء التايمر';
+            document.getElementById('timer-status-text').innerText = 'جاهز لبدء جلسة تركيز';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = String(Math.floor(timerRemainingSeconds / 60)).padStart(2, '0');
+            const secs = String(timerRemainingSeconds % 60).padStart(2, '0');
+            document.getElementById('timer-clock').innerText = `${mins}:${secs}`;
+            const pct = timerTotalSeconds > 0 ? (timerRemainingSeconds / timerTotalSeconds) * 100 : 0;
+            document.getElementById('timer-progress-bar').style.width = `${pct}%`;
+        }
+
+        // --- 6. Water & Steps Trackers ---
+        function addWater(delta) {
+            appState.waterCups = Math.max(0, Math.min(24, appState.waterCups + delta));
+            if (delta > 0) appState.points += 2;
+            saveState();
+            updateTrackersUI();
+            updateHeaderPoints();
+        }
+
+        function addSteps(delta) {
+            appState.steps = Math.max(0, Math.min(30000, appState.steps + delta));
+            if (delta > 0) appState.points += 5;
+            saveState();
+            updateTrackersUI();
+            updateHeaderPoints();
+        }
+
+        function updateTrackersUI() {
+            const waterPct = Math.min(100, (appState.waterCups / 16) * 100);
+            document.getElementById('water-label').innerText = `${appState.waterCups} / 16 كوب (${(appState.waterCups * 0.25).toFixed(2)} لتر)`;
+            document.getElementById('water-bar').style.width = `${waterPct}%`;
+
+            const stepsPct = Math.min(100, (appState.steps / 10000) * 100);
+            document.getElementById('steps-label').innerText = `${appState.steps.toLocaleString()} / 10,000`;
+            document.getElementById('steps-bar').style.width = `${stepsPct}%`;
+        }
+
+        function updateHeaderPoints() {
+            document.getElementById('header-points').innerText = `${appState.points} نقطة`;
+        }
+
+        // --- 7. Weekly To-Do List & Custom Lesson/Backlog Manager ---
+        function selectDay(dayKey) {
+            appState.currentDay = dayKey;
+            saveState();
+
+            document.querySelectorAll('.day-tab').forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
+                btn.classList.add('bg-slate-800', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`btn-day-${dayKey}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+                activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
+            }
+
+            document.getElementById('current-day-name').innerText = DAY_NAMES[dayKey];
+            renderTasks();
+        }
+
+        function setFilter(filterName) {
+            appState.currentFilter = filterName;
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.classList.remove('bg-slate-700', 'text-white');
+                pill.classList.add('bg-slate-850', 'text-slate-400');
+            });
+            const activePill = document.getElementById(`filter-${filterName}`);
+            if (activePill) {
+                activePill.classList.remove('bg-slate-850', 'text-slate-400');
+                activePill.classList.add('bg-slate-700', 'text-white');
+            }
+            renderTasks();
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const titleInput = document.getElementById('task-title-input');
+            const catInput = document.getElementById('task-cat-input');
+            const dayInput = document.getElementById('task-day-input');
+            const timeInput = document.getElementById('task-time-input');
+
+            const title = titleInput.value.trim();
+            if (!title) return;
+
+            const targetDay = dayInput.value === 'current' ? appState.currentDay : dayInput.value;
+            const newTask = {
+                id: 'task-' + Date.now(),
+                title: title,
+                category: catInput.value,
+                time: timeInput.value || '',
+                done: false
+            };
+
+            if (!appState.tasks[targetDay]) appState.tasks[targetDay] = [];
+            appState.tasks[targetDay].unshift(newTask);
+
+            titleInput.value = '';
+            timeInput.value = '';
+            saveState();
+
+            if (targetDay !== appState.currentDay) {
+                selectDay(targetDay);
+            } else {
+                renderTasks();
+            }
+        }
+
+        function toggleTask(taskId) {
+            const list = appState.tasks[appState.currentDay] || [];
+            const task = list.find(t => t.id === taskId);
+            if (task) {
+                task.done = !task.done;
+                appState.points += task.done ? 10 : -10;
+                appState.points = Math.max(0, appState.points);
+                saveState();
+                updateHeaderPoints();
+                renderTasks();
+            }
+        }
+
+        function deleteTask(taskId) {
+            const list = appState.tasks[appState.currentDay] || [];
+            appState.tasks[appState.currentDay] = list.filter(t => t.id !== taskId);
+            saveState();
+            renderTasks();
+        }
+
+        function resetCurrentDayChecks() {
+            const list = appState.tasks[appState.currentDay] || [];
+            list.forEach(t => t.done = false);
+            saveState();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasks-container');
+            const allDayTasks = appState.tasks[appState.currentDay] || [];
+
+            // Calculate progress based on all tasks of the day
+            const totalCount = allDayTasks.length;
+            const doneCount = allDayTasks.filter(t => t.done).length;
+            const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+
+            document.getElementById('day-progress-pct').innerText = `${pct}% (${doneCount}/${totalCount})`;
+            document.getElementById('day-progress-bar').style.width = `${pct}%`;
+
+            // Filter tasks for display
+            const filtered = appState.currentFilter === 'all'
+                ? allDayTasks
+                : allDayTasks.filter(t => t.category === appState.currentFilter);
+
+            container.innerHTML = '';
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 bg-slate-950/60 border border-dashed border-slate-800 rounded-xl text-slate-500 text-xs">
+                        لا توجد مهام في هذا القسم حالياً. أضف درساً أو مهمة جديدة من الأعلى!
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(task => {
+                const badgeClass = CATEGORY_STYLES[task.category] || CATEGORY_STYLES['عادات'];
+                const itemEl = document.createElement('div');
+                itemEl.className = `flex items-center justify-between gap-3 p-3.5 rounded-xl border transition-all ${
+                    task.done
+                        ? 'bg-slate-950/50 border-slate-800/80 opacity-65'
+                        : 'bg-slate-850 border-slate-800 hover:border-slate-700'
+                }`;
+
+                itemEl.innerHTML = `
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask('${task.id}')"
+                            class="w-5 h-5 rounded-md accent-emerald-500 cursor-pointer shrink-0">
+                        
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 flex-1 min-w-0">
+                            <span class="text-xs sm:text-sm font-semibold leading-snug break-words ${
+                                task.done ? 'line-through text-slate-500' : 'text-slate-100'
+                            }">
+                                ${task.title}
+                            </span>
+                            
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${badgeClass}">
+                                    ${task.category}
+                                </span>
+                                ${task.time ? `
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-900 text-amber-400 border border-slate-700">
+                                        ⏰ ${task.time}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="deleteTask('${task.id}')" title="حذف المهمة"
+                        class="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition shrink-0 text-xs font-bold">
+                        ✕
+                    </button>
+                `;
+
+                container.appendChild(itemEl);
+            });
+        }
+
+        // --- 8. Initialize App on Load ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+
+            // Populate profile inputs
+            document.getElementById('calc-weight').value = appState.profile.weight;
+            document.getElementById('calc-height').value = appState.profile.height;
+            document.getElementById('calc-age').value = appState.profile.age;
+            document.getElementById('calc-goal').value = appState.profile.goal;
+
+            // Populate reminder toggles
+            document.getElementById('toggle-water-reminder').checked = appState.reminders.waterHourly;
+            document.getElementById('toggle-study-reminder').checked = appState.reminders.studyBiHourly;
+
+            recalculateDiet();
+            updateNotifUI();
+            updateTrackersUI();
+            updateHeaderPoints();
+            updateTimerDisplay();
+            selectDay(appState.currentDay);
+        });
+    </script>
+</body>
+</html>
